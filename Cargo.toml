@@ -1,0 +1,10 @@
+[package]
+name = "microgate"
+version = "0.1.0"
+edition = "2024"
+description = "Lightweight async HTTP server framework"
+
+[dependencies]
+tokio = { version = "1.0", features = ["rt-multi-thread", "net", "io-util", "fs", "macros"] }
+wireframe = { git = "https://github.com/Leviathan856/WireFrame" }
+log = "0.4"

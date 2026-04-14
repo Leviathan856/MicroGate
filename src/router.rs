@@ -40,7 +40,8 @@ impl Router {
     where
         F: Handler,
     {
-        self.routes.insert((HttpMethod::GET, path.to_string()), Box::new(handler));
+        self.routes
+            .insert((HttpMethod::GET, path.to_string()), Box::new(handler));
         self
     }
 
@@ -48,11 +49,14 @@ impl Router {
     where
         F: Handler,
     {
-        self.routes.insert((HttpMethod::POST, path.to_string()), Box::new(handler));
+        self.routes
+            .insert((HttpMethod::POST, path.to_string()), Box::new(handler));
         self
     }
 
     pub fn route(&self, method: &HttpMethod, path: &str) -> Option<&dyn Handler> {
-        self.routes.get(&(method.clone(), path.to_string())).map(|b| b.as_ref())
+        self.routes
+            .get(&(method.clone(), path.to_string()))
+            .map(|b| b.as_ref())
     }
 }

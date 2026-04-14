@@ -37,19 +37,26 @@ impl Response {
 
     pub fn with_body(mut self, body: impl Into<Vec<u8>>) -> Self {
         self.body = body.into();
-        self.headers.insert("Content-Length".to_string(), self.body.len().to_string());
+        self.headers
+            .insert("Content-Length".to_string(), self.body.len().to_string());
         self
     }
-    
+
     pub fn not_found() -> Self {
-        Self::new().with_status(404, "Not Found").with_body("404 Not Found")
+        Self::new()
+            .with_status(404, "Not Found")
+            .with_body("404 Not Found")
     }
 
     pub fn internal_server_error() -> Self {
-        Self::new().with_status(500, "Internal Server Error").with_body("500 Internal Server Error")
+        Self::new()
+            .with_status(500, "Internal Server Error")
+            .with_body("500 Internal Server Error")
     }
-    
+
     pub fn bad_request() -> Self {
-        Self::new().with_status(400, "Bad Request").with_body("400 Bad Request")
+        Self::new()
+            .with_status(400, "Bad Request")
+            .with_body("400 Bad Request")
     }
 }

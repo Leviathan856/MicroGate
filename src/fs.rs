@@ -1,11 +1,11 @@
-use std::path::{Path, PathBuf};
 use std::io::ErrorKind;
+use std::path::{Path, PathBuf};
 
 use crate::response::Response;
 
 pub async fn serve_file(base_dir: impl AsRef<Path>, request_path: &str) -> Response {
     let mut path = PathBuf::from(base_dir.as_ref());
-    
+
     // Minimal path traversal prevention
     let safe_path = request_path.trim_start_matches('/');
     if safe_path.contains("..") {
@@ -20,7 +20,11 @@ pub async fn serve_file(base_dir: impl AsRef<Path>, request_path: &str) -> Respo
     match tokio::fs::read(&path).await {
         Ok(contents) => {
             // Very basic mime guessing
-            let ext = path.extension().unwrap_or_default().to_str().unwrap_or_default();
+            let ext = path
+                .extension()
+                .unwrap_or_default()
+                .to_str()
+                .unwrap_or_default();
             let mime = match ext {
                 "html" => "text/html",
                 "css" => "text/css",
@@ -30,7 +34,7 @@ pub async fn serve_file(base_dir: impl AsRef<Path>, request_path: &str) -> Respo
                 "jpg" | "jpeg" => "image/jpeg",
                 _ => "application/octet-stream",
             };
-            
+
             Response::new()
                 .with_header("Content-Type", mime)
                 .with_body(contents)

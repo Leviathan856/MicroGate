@@ -49,23 +49,33 @@ impl Server {
                             match parser.feed(&buf[..n]) {
                                 Ok(ParseStatus::Complete(_)) => {
                                     if let Ok(request) = parser.finish() {
-                                        let response = if let Some(handler) = router.route(&request.method, &request.uri) {
+                                        let response = if let Some(handler) =
+                                            router.route(&request.method, &request.uri)
+                                        {
                                             handler.handle(RequestContext { req: request }).await
                                         } else {
                                             Response::not_found()
                                         };
 
-                                        if let Err(e) = Self::write_response(&mut socket, response).await {
+                                        if let Err(e) =
+                                            Self::write_response(&mut socket, response).await
+                                        {
                                             log::error!("Error writing response: {}", e);
                                         }
                                     } else {
-                                        let _ = Self::write_response(&mut socket, Response::bad_request()).await;
+                                        let _ = Self::write_response(
+                                            &mut socket,
+                                            Response::bad_request(),
+                                        )
+                                        .await;
                                     }
                                     break;
                                 }
                                 Ok(ParseStatus::Incomplete) => continue, // Need more data
                                 Err(_) => {
-                                    let _ = Self::write_response(&mut socket, Response::bad_request()).await;
+                                    let _ =
+                                        Self::write_response(&mut socket, Response::bad_request())
+                                            .await;
                                     break;
                                 }
                             }
@@ -80,18 +90,21 @@ impl Server {
         }
     }
 
-    async fn write_response(socket: &mut tokio::net::TcpStream, response: Response) -> std::io::Result<()> {
+    async fn write_response(
+        socket: &mut tokio::net::TcpStream,
+        response: Response,
+    ) -> std::io::Result<()> {
         let mut head = format!("HTTP/1.1 {} {}\r\n", response.status, response.status_text);
-        
+
         for (k, v) in &response.headers {
             head.push_str(&format!("{}: {}\r\n", k, v));
         }
-        
+
         // Ensure connection close for this simple implementation
         if !response.headers.contains_key("Connection") {
             head.push_str("Connection: close\r\n");
         }
-        
+
         head.push_str("\r\n");
 
         socket.write_all(head.as_bytes()).await?;

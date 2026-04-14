@@ -54,6 +54,33 @@ impl Router {
         self
     }
 
+    pub fn put<F>(mut self, path: &str, handler: F) -> Self
+    where
+        F: Handler,
+    {
+        self.routes
+            .insert((HttpMethod::PUT, path.to_string()), Box::new(handler));
+        self
+    }
+
+    pub fn delete<F>(mut self, path: &str, handler: F) -> Self
+    where
+        F: Handler,
+    {
+        self.routes
+            .insert((HttpMethod::DELETE, path.to_string()), Box::new(handler));
+        self
+    }
+
+    pub fn patch<F>(mut self, path: &str, handler: F) -> Self
+    where
+        F: Handler,
+    {
+        self.routes
+            .insert((HttpMethod::PATCH, path.to_string()), Box::new(handler));
+        self
+    }
+
     pub fn route(&self, method: &HttpMethod, path: &str) -> Option<&dyn Handler> {
         self.routes
             .get(&(*method, path.to_string()))

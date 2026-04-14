@@ -56,7 +56,7 @@ impl Router {
 
     pub fn route(&self, method: &HttpMethod, path: &str) -> Option<&dyn Handler> {
         self.routes
-            .get(&(method.clone(), path.to_string()))
+            .get(&(*method, path.to_string()))
             .map(|b| b.as_ref())
     }
 }
